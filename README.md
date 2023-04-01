@@ -83,7 +83,7 @@ Copy-paste the deployed contract address [here](https://github.com/sambitsargam/
 Install this for first time by running the following command in your terminal:
 
 ```sh
-npm install -g create-5ire-dapp
+npm install -g create-5ire-dapp@0.0.4
 ```
 
 ### ⌛️ create-5ire-dapp command
