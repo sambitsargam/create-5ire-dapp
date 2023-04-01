@@ -1,23 +1,19 @@
 {
   "name": "create-5ire-dapp",
-  "version": "0.0.2",
-  "description": "A full-stack starter template with React & Hardhat to develop, deploy, and test Solidity smart contracts on the 5ire testnet network. ",
-  "bin": "./bin/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sambitsargam/create-5ire-dapp.git"
-  },
-  "keywords": [
-    "react",
-    "hardhat",
-    "smart-contract",
-    "blockchain",
-    "5ire-testnet"
-  ],
-  "author": "Sambit Sargam Ekalabya",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sambitsargam/create-5ire-dapp/issues"
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@metamask/sdk": "^0.1.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "chai": "^4.3.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "tailwindcss": "^3.3.1",
+    "web-vitals": "^2.1.4",
+    "web3": "^1.9.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,29 +38,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "dependencies": {
-    "@metamask/sdk": "^0.1.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "chalk": "^4.1.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    "webpack": "^5.76.3"
-  },
-  "devDependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "@nomiclabs/hardhat-ethers": "^2.2.2",
-    "@nomiclabs/hardhat-etherscan": "^3.1.6",
-    "chai": "^4.3.7",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.12.7",
-    "tailwindcss": "^3.2.6",
-    "web3": "^1.9.0"
   }
 }

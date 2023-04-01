@@ -5,7 +5,7 @@ import MetaMaskSDK from '@metamask/sdk';
 import Web3 from "web3";
 import "./App.css";
 // JSON containing ABI and Bytecode of compiled smart contracts
-import contractJson from "./artifacts/contracts/Greeter.sol/Greeter.json";
+import contractJson from "./abis/Greeter.json";
 
 new MetaMaskSDK({
   useDeeplink: false,
@@ -37,7 +37,7 @@ function App() {
       const networkId = await web3.eth.getChainId();
       setGetNetwork(networkId);
       // INSERT deployed smart contract address
-      const contractAddress = "0x30B962f22A7C8D9f980fEc3670dbb44dc17B5BcB";
+      const contractAddress = "0xECbfe4D32D478F7D16Cf959eD2B0Fb1253a842EB";
       setContractAddress(contractAddress);
       // Instantiate smart contract instance
       const Greeter = new web3.eth.Contract(contractJson.abi, contractAddress);
@@ -72,6 +72,48 @@ function App() {
     }
   }
 
+  const addChain = async () => {
+    const networkId = await window.ethereum.request({ method: 'net_version' });
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x3e5",
+            chainName: "5ire Testnet",
+            blockExplorerUrls: ["https://explorer.5ire.network/"],
+            nativeCurrency: { symbol: "5IRE", decimals: 18 },
+            rpcUrls: ["https://rpc-testnet.5ire.network/"],
+          },
+        ],
+      });
+      window.alert("5ire Testnet added");
+      window.location.reload();
+    } catch (error) {
+      console.log("Error adding 5ire Testnet:", error);
+    }
+  
+    if (networkId !== "997") { // 997 is the network ID for 5ire Testnet
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x3e5' }]
+        });
+        window.alert('Switched to 5ire Testnet')
+      } catch (error) {
+        if (error.code === 4902) { // User rejected the network switch
+          window.alert('User rejected network switch');
+        } else {
+          window.alert('Error switching network:', error);
+        }
+        return;
+      }
+    }
+  
+   
+  };
+  
+
   // Read message from smart contract
   async function receive() {
     // Display message
@@ -99,7 +141,7 @@ function App() {
       {/* Metamask status */}
       <div className="text-center">
         <h1>
-          {getNetwork !== 0x15
+          {getNetwork !== 0x3e5
             ? "Please make sure you're on the 5ire testnet network"
             : mmStatus}
         </h1>
@@ -108,6 +150,11 @@ function App() {
       <h1 className="text-center text-4xl font-bold mt-8">
         create-5ire-app template 🚀
       </h1>
+
+      <center>{getNetwork !== 0x3e5 && <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
+              onClick={addChain}
+            >Add /  Switch Network</button>}</center>
       {/* Connect to Metamask */}
 
       <center>
