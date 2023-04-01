@@ -1,11 +1,16 @@
 import React from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
+import MetaMaskSDK from '@metamask/sdk';
 import Web3 from "web3";
 import "./App.css";
 // JSON containing ABI and Bytecode of compiled smart contracts
 import contractJson from "./artifacts/contracts/Greeter.sol/Greeter.json";
 
+new MetaMaskSDK({
+  useDeeplink: false,
+  communicationLayerPreference: "socket",
+});
 
 function App() {
   const [mmStatus, setMmStatus] = useState("Not connected!");
@@ -47,8 +52,14 @@ function App() {
     // Check if Metamask is installed
     if (typeof window.ethereum !== "undefined") {
       // Request account access if needed
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      // Get account address
+      window.ethereum
+      .request({
+        method: "eth_requestAccounts",
+        params: [],
+      })
+      .then((res) => console.log("request accounts", res))
+      .catch((e) => console.log("request accounts ERR", e));
+
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
       });
