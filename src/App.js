@@ -149,7 +149,7 @@ function App() {
         } catch (error) {
           if (error.code === 4902) {
             // User rejected the network switch
-            alert("User rejected network switch");
+            alert("User rejected network to switch or Network not added yet");
           } else {
             console.log("Error switching network:", error);
           }
@@ -222,7 +222,7 @@ function App() {
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
           onClick={addChain}
           >
-            Add Network
+            Add 5ire Testnet Network
           </button>
         )}
       </center>
