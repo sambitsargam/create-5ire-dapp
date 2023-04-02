@@ -2,6 +2,7 @@ import React from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MetaMaskSDK from '@metamask/sdk';
+import detectEthereumProvider from '@metamask/detect-provider';
 import Web3 from "web3";
 import "./App.css";
 // JSON containing ABI and Bytecode of compiled smart contracts
@@ -28,6 +29,7 @@ function App() {
 
 
 
+
   useEffect(() => {
     (async () => {
       // Define web3
@@ -49,6 +51,16 @@ function App() {
 
   // Connect to Metamask
   async function ConnectWallet() {
+    const provider = await detectEthereumProvider();
+    if (provider) {
+      // From now on, this should always be true:
+       // eslint-disable-next-line no-unused-expressions
+       provider === window.ethereum
+      // eslint-disable-next-line no-undef
+      console.log('Metamask Available')
+    } else {
+      window.alert('Please install MetaMask!');
+    }
     // Check if Metamask is installed
     if (typeof window.ethereum !== "undefined") {
       // Request account access if needed
