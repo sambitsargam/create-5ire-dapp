@@ -3,6 +3,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import MetaMaskSDK from '@metamask/sdk';
 import detectEthereumProvider from '@metamask/detect-provider';
+// eslint-disable-next-line no-unused-vars
+import { ethers } from "ethers";
 import Web3 from "web3";
 import "./App.css";
 // JSON containing ABI and Bytecode of compiled smart contracts
@@ -48,6 +50,26 @@ function App() {
       Greeter.setProvider(window.ethereum);
     })();
   }, []);
+  
+
+  // eslint-disable-next-line no-undef
+  if (ethereum._metamask.isUnlocked()) {
+    console.log('Metamask is unlocked')
+  }
+  else {
+    console.log('Metamask is locked')
+  }
+
+
+
+  // change account if metamask account is changed
+  useEffect(() => {
+    if (isConnected) {
+      window.ethereum.on("accountsChanged", function (accounts) {
+        setAccountAddress(accounts[0]);
+      });
+    }
+  }, [isConnected]);
 
   // Connect to Metamask
   async function ConnectWallet() {
