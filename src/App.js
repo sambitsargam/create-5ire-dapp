@@ -28,6 +28,7 @@ function App() {
   const [contractAddress, setContractAddress] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const [txnHash, setTxnHash] = useState(null);
+  const [balance, setBalance] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -56,14 +57,26 @@ function App() {
   }
 
   // change account if metamask account is changed
-
   useEffect(() => {
     if (isConnected) {
       window.ethereum.on("accountsChanged", function (accounts) {
         setAccountAddress(accounts[0]);
+        web3.eth.getBalance(accounts[0]).then((bal) => {
+          setBalance(web3.utils.fromWei(bal, "ether"));
+        });
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected]);
+
+  // // check the balance of the account
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     web3.eth.getBalance(accountAddress).then((bal) => {
+  //       setBalance(web3.utils.fromWei(bal, "ether"));
+  //     });
+  //   }
+  // }, [isConnected]);
 
   // Connect to Metamask
   async function ConnectWallet() {
@@ -116,6 +129,11 @@ function App() {
   // Auto change network if not on 5ire Testnet
   useEffect(() => {
     (async () => {
+      // check that network is changed or not
+      window.ethereum.on("chainChanged", function (chainId) {
+        window.location.reload();
+      });
+
       // Define networkid
       const networkId = await window.ethereum.request({
         method: "net_version",
@@ -138,28 +156,29 @@ function App() {
         }
       }
     })();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.ethereum]);
 
-  // const addChain = async () => {
-  //   try {
-  //     await window.ethereum.request({
-  //       method: "wallet_addEthereumChain",
-  //       params: [
-  //         {
-  //           chainId: "0x3e5",
-  //           chainName: "5ire Testnet",
-  //           blockExplorerUrls: ["https://explorer.5ire.network/"],
-  //           nativeCurrency: { symbol: "5IRE", decimals: 18 },
-  //           rpcUrls: ["https://rpc-testnet.5ire.network/"],
-  //         },
-  //       ],
-  //     });
-  //     window.alert("5ire Testnet added");
-  //     window.location.reload();
-  //   } catch (error) {
-  //     console.log("Error adding 5ire Testnet:", error);
-  //   }
-  // };
+  const addChain = async () => {
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x3e5",
+            chainName: "5ire Testnet",
+            blockExplorerUrls: ["https://explorer.5ire.network/"],
+            nativeCurrency: { symbol: "5IRE", decimals: 18 },
+            rpcUrls: ["https://rpc-testnet.5ire.network/"],
+          },
+        ],
+      });
+      window.alert("5ire Testnet added");
+      window.location.reload();
+    } catch (error) {
+      console.log("Error adding 5ire Testnet:", error);
+    }
+  };
 
   // Read message from smart contract
   async function receive() {
@@ -200,8 +219,8 @@ function App() {
 
       <center>
         {getNetwork !== 0x3e5 && (
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
+          onClick={addChain}
           >
             Add Network
           </button>
@@ -213,11 +232,11 @@ function App() {
         {isConnected && (
           // Show message if connected
           <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
-              onClick={DisconnectWallet}
-            >
-              Disconnect
-            </button>
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
+            onClick={DisconnectWallet}
+          >
+            Disconnect
+          </button>
         )}
         {!isConnected && (
           <>
@@ -234,12 +253,15 @@ function App() {
       <center>
         {isConnected && (
           <div className="text-center">
-            <h1 className="text-2xl font-bold mt-8">Connected Address</h1>
-            <h1 className="text-xl mt-2">{accountAddress}</h1>
+            <h1 className="text-2xl font-bold mt-4">
+              Connected Address: {accountAddress}
+            </h1>
+
+            {/* Display Balance */}
+            <h1 className="text-2xl font-bold mt-4">Balance: {balance} 5IRE</h1>
           </div>
         )}
       </center>
-
 
       {/* Send message */}
       <center className="mt-16">
