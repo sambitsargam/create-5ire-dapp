@@ -1,8 +1,8 @@
 import React from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
-import MetaMaskSDK from '@metamask/sdk';
-import detectEthereumProvider from '@metamask/detect-provider';
+import MetaMaskSDK from "@metamask/sdk";
+import detectEthereumProvider from "@metamask/detect-provider";
 // eslint-disable-next-line no-unused-vars
 import { ethers } from "ethers";
 import Web3 from "web3";
@@ -29,9 +29,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [txnHash, setTxnHash] = useState(null);
 
-
-
-
   useEffect(() => {
     (async () => {
       // Define web3
@@ -50,19 +47,16 @@ function App() {
       Greeter.setProvider(window.ethereum);
     })();
   }, []);
-  
 
   // eslint-disable-next-line no-undef
   if (ethereum._metamask.isUnlocked()) {
-    console.log('Metamask is unlocked')
+    console.log("Metamask is unlocked");
+  } else {
+    console.log("Metamask is locked");
   }
-  else {
-    console.log('Metamask is locked')
-  }
-
-
 
   // change account if metamask account is changed
+
   useEffect(() => {
     if (isConnected) {
       window.ethereum.on("accountsChanged", function (accounts) {
@@ -76,23 +70,23 @@ function App() {
     const provider = await detectEthereumProvider();
     if (provider) {
       // From now on, this should always be true:
-       // eslint-disable-next-line no-unused-expressions
-       provider === window.ethereum
+      // eslint-disable-next-line no-unused-expressions
+      provider === window.ethereum;
       // eslint-disable-next-line no-undef
-      console.log('Metamask Available')
+      console.log("Metamask Available");
     } else {
-      window.alert('Please install MetaMask!');
+      window.alert("Please install MetaMask!");
     }
     // Check if Metamask is installed
     if (typeof window.ethereum !== "undefined") {
       // Request account access if needed
       window.ethereum
-      .request({
-        method: "eth_requestAccounts",
-        params: [],
-      })
-      .then((res) => console.log("request accounts", res))
-      .catch((e) => console.log("request accounts ERR", e));
+        .request({
+          method: "eth_requestAccounts",
+          params: [],
+        })
+        .then((res) => console.log("request accounts", res))
+        .catch((e) => console.log("request accounts ERR", e));
 
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
@@ -106,47 +100,66 @@ function App() {
     }
   }
 
-  const addChain = async () => {
-    const networkId = await window.ethereum.request({ method: 'net_version' });
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x3e5",
-            chainName: "5ire Testnet",
-            blockExplorerUrls: ["https://explorer.5ire.network/"],
-            nativeCurrency: { symbol: "5IRE", decimals: 18 },
-            rpcUrls: ["https://rpc-testnet.5ire.network/"],
-          },
-        ],
-      });
-      window.alert("5ire Testnet added");
-      window.location.reload();
-    } catch (error) {
-      console.log("Error adding 5ire Testnet:", error);
-    }
-  
-    if (networkId !== "997") { // 997 is the network ID for 5ire Testnet
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x3e5' }]
-        });
-        window.alert('Switched to 5ire Testnet')
-      } catch (error) {
-        if (error.code === 4902) { // User rejected the network switch
-          window.alert('User rejected network switch');
-        } else {
-          window.alert('Error switching network:', error);
-        }
-        return;
+  // Disconnect from Metamask
+  async function DisconnectWallet() {
+    // Disconnect Metamask
+    await window.ethereum.on("disconnect", (error) => {
+      if (error) {
+        console.error(error);
       }
-    }
-  
-   
-  };
-  
+    });
+    // Set Metamask status
+    setMmStatus("Not connected!");
+    setIsConnected(false);
+  }
+
+  // Auto change network if not on 5ire Testnet
+  useEffect(() => {
+    (async () => {
+      // Define networkid
+      const networkId = await window.ethereum.request({
+        method: "net_version",
+      });
+      if (networkId !== "997") {
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x3e5" }],
+          });
+          alert("Switched to 5ire Testnet");
+          window.location.reload(false);
+        } catch (error) {
+          if (error.code === 4902) {
+            // User rejected the network switch
+            alert("User rejected network switch");
+          } else {
+            console.log("Error switching network:", error);
+          }
+        }
+      }
+    })();
+  }, []);
+
+  // const addChain = async () => {
+  //   try {
+  //     await window.ethereum.request({
+  //       method: "wallet_addEthereumChain",
+  //       params: [
+  //         {
+  //           chainId: "0x3e5",
+  //           chainName: "5ire Testnet",
+  //           blockExplorerUrls: ["https://explorer.5ire.network/"],
+  //           nativeCurrency: { symbol: "5IRE", decimals: 18 },
+  //           rpcUrls: ["https://rpc-testnet.5ire.network/"],
+  //         },
+  //       ],
+  //     });
+  //     window.alert("5ire Testnet added");
+  //     window.location.reload();
+  //   } catch (error) {
+  //     console.log("Error adding 5ire Testnet:", error);
+  //   }
+  // };
 
   // Read message from smart contract
   async function receive() {
@@ -185,19 +198,26 @@ function App() {
         create-5ire-app template 🚀
       </h1>
 
-      <center>{getNetwork !== 0x3e5 && <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
-              onClick={addChain}
-            >Add /  Switch Network</button>}</center>
+      <center>
+        {getNetwork !== 0x3e5 && (
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
+          >
+            Add Network
+          </button>
+        )}
+      </center>
       {/* Connect to Metamask */}
 
       <center>
         {isConnected && (
           // Show message if connected
-          <div className="text-center text-xl mt-12">
-            {/* Show account address */}
-            <h1>Connected to {accountAddress}</h1>
-          </div>
+          <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-8 mb-6"
+              onClick={DisconnectWallet}
+            >
+              Disconnect
+            </button>
         )}
         {!isConnected && (
           <>
@@ -210,6 +230,16 @@ function App() {
           </>
         )}
       </center>
+      {/* Display address */}
+      <center>
+        {isConnected && (
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mt-8">Connected Address</h1>
+            <h1 className="text-xl mt-2">{accountAddress}</h1>
+          </div>
+        )}
+      </center>
+
 
       {/* Send message */}
       <center className="mt-16">
@@ -262,9 +292,13 @@ function App() {
       </div>
       {/* Footer developer content */}
       <footer className="footer">
-        <img src="https://docs.5ire.org/img/ms-icon-150x150.png" className="App-logo" alt="logo" />
+        <img
+          src="https://docs.5ire.org/img/ms-icon-150x150.png"
+          className="App-logo"
+          alt="logo"
+        />
         <h1 className="mt-4 text-xs sm:text-sm text-black">
-          Learn more about 5ire  Docs {""}
+          Learn more about 5ire Docs {""}
           <a
             className="text-blue-500 no-underline hover:underline hover:text-blue-400"
             href="https://docs.5ire.org/"
