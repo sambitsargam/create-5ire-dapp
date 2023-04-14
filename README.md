@@ -34,7 +34,7 @@ npm install -g create-5ire-dapp
 Open up your terminal (or command prompt) and type the following command:
 
 ```sh
-npx create-5ire-dapp <your-dapp-name>
+npx create-5ire-dapp <your-dapp-name> truffle
 
 # cd into the directory
 cd <your-dapp-name>
@@ -83,7 +83,7 @@ Copy-paste the deployed contract address [here](https://github.com/sambitsargam/
 Install this for first time by running the following command in your terminal:
 
 ```sh
-npm install -g create-5ire-dapp@0.0.4
+npm install -g create-5ire-dapp
 ```
 
 ### ⌛️ create-5ire-dapp command
@@ -91,7 +91,7 @@ npm install -g create-5ire-dapp@0.0.4
 Open up your terminal (or command prompt) and type the following command:
 
 ```sh
-npx create-5ire-dapp <your-dapp-name>
+npx create-5ire-dapp <your-dapp-name> hardhat
 
 # cd into the directory
 cd <your-dapp-name>
@@ -111,6 +111,7 @@ Now, you can write your contracts in `./contracts/` directory, replace `Greeter.
 
 ```sh
 npx hardhat compile
+
 
 # for testing the smart contracts
 npx hardhat test
